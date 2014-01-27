@@ -136,7 +136,15 @@ if setuptools is not None:
     if sys.version_info < (3, 5):
         install_requires.append('backports_abc>=0.4')
     kwargs['install_requires'] = install_requires
-
+    
+    tests_require = ['mock', 'tox']
+    kwargs["tests_require"] = tests_require
+    kwargs["extras_require"] = {
+        'optional' : ['pycares', 'pycurl', 'twisted', 'futures', 'monotime'],
+        'test' : tests_require,
+        "test:python_version=='2.6'" : ['unittest2']
+    }
+	
 setup(
     name="tornado",
     version=version,
