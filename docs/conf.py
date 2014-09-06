@@ -79,6 +79,11 @@ latex_documents = [
     ('index', 'tornado.tex', 'Tornado Documentation', 'The Tornado Authors', 'manual', False),
     ]
 
+latex_elements = {
+    'classoptions': ',oneside',
+    'babel': '\\usepackage[english]{babel}'
+}
+    
 # HACK: sphinx has limited support for substitutions with the |version|
 # variable, but there doesn't appear to be any way to use this in a link
 # target.
