@@ -19,15 +19,8 @@ import platform
 import sys
 import warnings
 
-try:
-    # Use setuptools if available, for install_requires (among other things).
-    import setuptools
-    from setuptools import setup
-except ImportError:
-    setuptools = None
-    from distutils.core import setup
-
-from distutils.core import Extension
+import setuptools
+from setuptools import setup, Extension
 
 # The following code is copied from
 # https://github.com/mongodb/mongo-python-driver/blob/master/setup.py
@@ -119,31 +112,20 @@ if (platform.python_implementation() == 'CPython' and
         kwargs['cmdclass'] = {'build_ext': custom_build_ext}
 
 
-if setuptools is not None:
-    # If setuptools is not available, you're on your own for dependencies.
-    install_requires = []
-    if sys.version_info < (2, 7):
-        # Only needed indirectly, for singledispatch.
-        install_requires.append('ordereddict')
-    if sys.version_info < (3, 2):
-        install_requires.append('backports.ssl_match_hostname')
-    if sys.version_info < (3, 4):
-        install_requires.append('singledispatch')
-        # Certifi is also optional on 2.7.9+, although making our dependencies
-        # conditional on micro version numbers seems like a bad idea
-        # until we have more declarative metadata.
-        install_requires.append('certifi')
-    if sys.version_info < (3, 5):
-        install_requires.append('backports_abc>=0.4')
-    kwargs['install_requires'] = install_requires
-    
-    tests_require = ['mock', 'tox']
-    kwargs["tests_require"] = tests_require
-    kwargs["extras_require"] = {
-        'optional' : ['pycares', 'pycurl', 'twisted', 'futures', 'monotime'],
-        'test' : tests_require,
-        "test:python_version=='2.6'" : ['unittest2']
-    }
+install_requires = []
+kwargs['install_requires'] = install_requires
+
+tests_require = ['mock', 'tox']
+kwargs["tests_require"] = tests_require
+kwargs["extras_require"] = {
+    ':python_version == "2.6"': ['ordereddict'],
+    ':python_version < "3.2"': ['backports.ssl_match_hostname'],
+    ':python_version < "3.4"': ['singledispatch', 'certifi'],
+    ':python_version < "3.5"': ['backports_abc>=0.4'],
+    'optional' : ['pycares', 'pycurl', 'twisted', 'futures', 'monotonic'],
+    'test' : tests_require,
+    "test:python_version=='2.6'" : ['unittest2']
+}
 	
 setup(
     name="tornado",

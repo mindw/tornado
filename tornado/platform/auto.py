@@ -38,17 +38,18 @@ elif os.name == 'nt':
 else:
     from tornado.platform.posix import set_close_exec, Waker
 
-try:
-    # monotime monkey-patches the time module to have a monotonic function
-    # in versions of python before 3.3.
-    import monotime
-    # Silence pyflakes warning about this unused import
-    monotime
-except ImportError:
-    pass
-try:
-    from time import monotonic as monotonic_time
-except ImportError:
-    monotonic_time = None
+import time as _time
+
+if not hasattr(_time, 'monotonic'):
+    try:
+        # monotonic provides a monotonic function in versions of python before 3.3.
+        from monotonic import monotonic as monotonic_time
+        _time.monotonic = monotonic_time        
+    except ImportError:
+        monotonic_time = None
+
+else:
+    monotonic_time = _time.monotonic
+
 
 __all__ = ['Waker', 'set_close_exec', 'monotonic_time']
